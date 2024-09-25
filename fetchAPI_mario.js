@@ -33,7 +33,13 @@ app.get('/fetch-data', async (req, res) => {
     // console.log(fetchedPartNumber.text());
     // console.log(fetchedMan.text());
     // console.log(fetchedPrice.text());
+
+    // Make some more processing on the Distributer name
     let processedData_Distributer = fetchedDistributer.text() || 'No data found';
+    let firstDigitIndex = processedData_Distributer.search(/\d/); // Searching fpr the first digit
+    let processedData_Distributer_filtered = processedData_Distributer.substring(0, firstDigitIndex);
+
+
     let processedData_PartNumber = fetchedPartNumber.text() || 'No data found';
     let processedData_Man = fetchedMan.text() || 'No data found';
     let processedData_Discription = fetchedDescription.text();
@@ -43,7 +49,7 @@ app.get('/fetch-data', async (req, res) => {
 
     // Send the processed data back to the requester
     res.send({ 
-        distributer: processedData_Distributer,
+        distributer: processedData_Distributer_filtered,
         partNumber: processedData_PartNumber,
         manufacturer: processedData_Man,
         description: processedData_Discription,
