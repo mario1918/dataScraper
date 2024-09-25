@@ -20,41 +20,80 @@ app.get('/fetch-data', async (req, res) => {
     const $ = cheerio.load(data);
 
     // Use Cheerio to find elements
-    const fetchedDistributer = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(1)');
-    const fetchedPartNumber = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(2) a b');
-    const fetchedMan = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(3)');
-    const fetchedDescription = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(4)');
-    const fetchedPrice = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(5) table tbody tr td');
-    const fetchedQuantity = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(6)');
+    // const fetchedDistributer = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(1)');
+    // const fetchedPartNumber = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(2) a b');
+    // const fetchedMan = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(3)');
+    // const fetchedDescription = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(4)');
+    // const fetchedPrice = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(5) table tbody tr td');
+    // const fetchedQuantity = $('div:nth-of-type(4) table:nth-of-type(2) tbody tr:nth-of-type(2) td:nth-of-type(6)');
 
-    // Extract the text content
-    //console.log(targetElement);
-    // console.log(fetchedDistributer.text());
-    // console.log(fetchedPartNumber.text());
-    // console.log(fetchedMan.text());
-    // console.log(fetchedPrice.text());
+    const distributors = [];
 
-    // Make some more processing on the Distributer name
-    let processedData_Distributer = fetchedDistributer.text() || 'No data found';
-    let firstDigitIndex = processedData_Distributer.search(/\d/); // Searching fpr the first digit
-    let processedData_Distributer_filtered = processedData_Distributer.substring(0, firstDigitIndex);
+    // Traverse the table rows
+    $('div:nth-of-type(4) table:nth-of-type(2) tbody tr').each((i, tr) => {
+      const distributorCell = $(tr).find('td[valign="top"]');
 
-
-    let processedData_PartNumber = fetchedPartNumber.text() || 'No data found';
-    let processedData_Man = fetchedMan.text() || 'No data found';
-    let processedData_Discription = fetchedDescription.text();
-    let processedData_Price = fetchedPrice.text() || 'No data found';
-    let processedData_Quantity = fetchedQuantity.text() || 'No data found';
+      // If a distributor cell is found, we add the distributor to our array
+      if (distributorCell.length > 0) {
+        distributors.push({
+          distributor: distributorCell.text().trim(),
+          parts: []
+        });
 
 
-    // Send the processed data back to the requester
-    res.send({ 
-        distributer: processedData_Distributer_filtered,
-        partNumber: processedData_PartNumber,
-        manufacturer: processedData_Man,
-        description: processedData_Discription,
-        price: processedData_Price,
-        quantity: processedData_Quantity
+        // Check if there is already a distributor in the array before trying to add parts
+        if (distributors.length > 0) {
+          // Extract the part information from each row
+          const partNumberCell = $(tr).find('td:nth-child(2)');
+          const manufacturerCell = $(tr).find('td:nth-child(3)');
+          const descriptionCell = $(tr).find('td:nth-child(4)');
+          const priceCell = $(tr).find('td:nth-child(5)');
+          const quantityCell = $(tr).find('td:nth-child(6)');
+
+          // If there's a part number, it means this row contains part data
+          if (partNumberCell.text().trim()) {
+            const currentDistributor = distributors[distributors.length - 1];
+            currentDistributor.parts.push({
+              partNumber: partNumberCell.text().trim(),
+              manufacturer: manufacturerCell.text().trim(),
+              description: descriptionCell.text().trim(),
+              price: priceCell.text().trim(),
+              quantity: quantityCell.text().trim()
+            });
+          }
+        }
+      }
+      else {
+        if (distributors.length > 0) {
+          // Extract the part information from each row
+          const partNumberCell = $(tr).find('td:nth-child(1) a b');
+          const manufacturerCell = $(tr).find('td:nth-child(2)');
+          const descriptionCell = $(tr).find('td:nth-child(3)');
+          const priceCell = $(tr).find('td:nth-child(4)');
+          const quantityCell = $(tr).find('td:nth-child(5)');
+
+          // If there's a part number, it means this row contains part data
+          if (partNumberCell.text().trim()) {
+            const currentDistributor = distributors[distributors.length - 1];
+            currentDistributor.parts.push({
+              partNumber: partNumberCell.text().trim(),
+              manufacturer: manufacturerCell.text().trim(),
+              description: descriptionCell.text().trim(),
+              price: priceCell.text().trim(),
+              quantity: quantityCell.text().trim()
+            });
+          }
+        }
+
+      }
+
+
+    });
+
+
+    res.send({
+
+      distributors
     });
 
   } catch (error) {
