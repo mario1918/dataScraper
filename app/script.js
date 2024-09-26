@@ -19,33 +19,75 @@ btn_search.addEventListener('click', async function () {
     table_result.innerHTML = '';
     table.classList.remove('hidden');
 
+    data.distributors.forEach(element => {
+        let tr = document.createElement("tr");
+        let td_distributer = document.createElement("td");
+        let td_empty = document.createElement("td");
 
-    // Create the row
-    let tr = document.createElement("tr");
-    // Creating the cells
-    let td_distributer = document.createElement("td");
-    let td_partNum = document.createElement("td");
-    let td_man = document.createElement("td");
-    let td_description = document.createElement("td");
-    let td_price = document.createElement("td");
-    let td_quantity = document.createElement("td");
+        td_distributer.textContent = element.distributor;
+        tr.appendChild(td_distributer);
+        tr.appendChild(td_empty);
 
-    // Assigning cells values
-    td_distributer.textContent = data.distributer;
-    td_partNum.textContent = data.partNumber;
-    td_man.textContent = data.manufacturer;
-    td_description.textContent = data.description;
-    td_price.textContent = data.price;
-    td_quantity.textContent = data.quantity;
+        element.parts.forEach(part => {
+            let partRowBreak = document.createElement("tr");
 
-    tr.appendChild(td_distributer);
-    tr.appendChild(td_partNum);
-    tr.appendChild(td_man);
-    tr.appendChild(td_description);
-    tr.appendChild(td_price);
-    tr.appendChild(td_quantity);
+            let td_partNum = document.createElement("td");
+            let td_man = document.createElement("td");
+            let td_description = document.createElement("td");
+            let td_price = document.createElement("td");
+            let td_quantity = document.createElement("td");
 
-    table_result.appendChild(tr);
+
+            td_partNum.textContent = part.partNumber;
+            td_man.textContent = part.manufacturer;
+            td_description.textContent = part.description;
+            td_price.textContent = part.price;
+            td_quantity.textContent = part.quantity;
+
+
+            partRowBreak.appendChild(td_partNum);
+            partRowBreak.appendChild(td_man);
+            partRowBreak.appendChild(td_description);
+            partRowBreak.appendChild(td_price);
+            partRowBreak.appendChild(td_quantity);
+            td_empty.appendChild(partRowBreak);
+
+
+
+        });
+        table_result.appendChild(tr);
+
+
+
+    });
+
+
+    // // Create the row
+    // let tr = document.createElement("tr");
+    // // Creating the cells
+    // let td_distributer = document.createElement("td");
+    // let td_partNum = document.createElement("td");
+    // let td_man = document.createElement("td");
+    // let td_description = document.createElement("td");
+    // let td_price = document.createElement("td");
+    // let td_quantity = document.createElement("td");
+
+    // // Assigning cells values
+    // td_distributer.textContent = data.distributer;
+    // td_partNum.textContent = data.partNumber;
+    // td_man.textContent = data.manufacturer;
+    // td_description.textContent = data.description;
+    // td_price.textContent = data.price;
+    // td_quantity.textContent = data.quantity;
+
+    // tr.appendChild(td_distributer);
+    // tr.appendChild(td_partNum);
+    // tr.appendChild(td_man);
+    // tr.appendChild(td_description);
+    // tr.appendChild(td_price);
+    // tr.appendChild(td_quantity);
+
+    // table_result.appendChild(tr);
 
 
 });
